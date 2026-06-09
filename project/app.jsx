@@ -344,6 +344,21 @@
       }
     }, [sharedSchedule]);
 
+    // Realtime: when configured, the market mirrors the live trade_offers table.
+    // Optimistic local writes still give instant feedback; this reconciles them.
+    useEffect(() => {
+      if (!window.SSDB || !window.SSDB.enabled) return;
+      const unsub = window.SSDB.subscribeOffers((rows) => {
+        setOffers(prev => {
+          // keep any just-posted optimistic "mine" rows the DB hasn't echoed yet
+          const ids = new Set(rows.map(r => r.id));
+          const pendingMine = prev.filter(o => o.mine && !ids.has(o.id));
+          return [...pendingMine, ...rows];
+        });
+      });
+      return unsub;
+    }, []);
+
     const t = useMemo(() => (k) => T(lang, k), [lang]);
 
     function fireToast(msg) {
@@ -384,6 +399,7 @@
         };
         setOffers(os => [newOffer, ...os]);
         setListedIds(ids => [...ids, ...bundleCardIds]);
+        if (window.SSDB) window.SSDB.insertOffer(newOffer);
         setScreen("market");
         fireToast("✓ Bundle posted to market");
         return;
@@ -404,6 +420,7 @@
         };
         setOffers(os => [newOffer, ...os]);
         setListedIds(ids => [...ids, ...bundleCardIds]);
+        if (window.SSDB) window.SSDB.insertOffer(newOffer);
         setScreen("market");
         fireToast("✓ Rest day bundle posted to market");
         return;
@@ -440,6 +457,7 @@
       }
       setOffers(os => [newOffer, ...os]);
       setListedIds(ids => [...ids, cardId]);
+      if (window.SSDB) window.SSDB.insertOffer(newOffer);
       setScreen("market");
       fireToast("✓ " + t("posted"));
     }
@@ -448,7 +466,9 @@
       setOffers(os => os.filter(o => o.id !== offer.id));
       if (myCard) setListedIds(ids => ids.filter(id => id !== myCard.id));
       const sealedAt = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short" });
-      setPendingRtm(ps => [{ id: "rtm-" + Date.now(), offer, myCard: myCard || null, bundleLegs: bundleLegs || null, sealedAt, rtmMsg: rtmMsg || "" }, ...ps]);
+      const entry = { id: "rtm-" + Date.now(), offer, myCard: myCard || null, bundleLegs: bundleLegs || null, sealedAt, rtmMsg: rtmMsg || "" };
+      setPendingRtm(ps => [entry, ...ps]);
+      if (window.SSDB) { window.SSDB.removeOffer(offer.id); window.SSDB.insertMatch(entry); }
     }
 
     function approveRtm(rtmId) {
@@ -500,6 +520,7 @@
       }
       setPendingRtm(ps => ps.filter(p => p.id !== rtmId));
       setTrades(n => n + 1);
+      if (window.SSDB) window.SSDB.resolveMatch(rtmId, "approved");
       fireToast("✅ RTM approved — your hand is updated");
     }
 
@@ -508,6 +529,7 @@
       if (entry) {
         // Restore the original offer so both agents can try again
         setOffers(os => [{ ...entry.offer, ts: "now" }, ...os]);
+        if (window.SSDB) { window.SSDB.reopenOffer({ ...entry.offer, ts: "now" }); window.SSDB.resolveMatch(rtmId, "declined"); }
       }
       setPendingRtm(ps => ps.filter(p => p.id !== rtmId));
       fireToast("❌ RTM declined — trade reopened for both agents");
@@ -702,6 +724,7 @@
     function handleImported(newSchedule, alerts) {
       setSharedSchedule(newSchedule);
       if (alerts && alerts.length) setScheduleAlerts(prev => [...prev, ...alerts]);
+      if (window.SSDB) window.SSDB.upsertSchedules(newSchedule);
     }
     function handleDismissAlert(idx) { setScheduleAlerts(a => a.filter((_, i) => i !== idx)); }
 
