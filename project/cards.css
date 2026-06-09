@@ -1,0 +1,334 @@
+/* ===========================================================================
+   ShiftSwap — Card art system
+   A shift card is a collectible trading card: index corners, character art,
+   foil borders for advanced tiers, flag accents for language specialty.
+   =========================================================================== */
+
+.card {
+  position: relative;
+  border-radius: 18px;
+  aspect-ratio: 3 / 4.05;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  isolation: isolate;
+  color: var(--ink, #2a1f00);
+  background: linear-gradient(155deg, var(--c1) 0%, var(--c2) 100%);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.35) inset,
+    0 18px 30px -16px rgba(0,0,0,.7),
+    0 4px 10px -4px rgba(0,0,0,.5);
+  border: 1px solid rgba(255,255,255,.16);
+  user-select: none;
+  transition: transform .18s cubic-bezier(.2,.7,.3,1), box-shadow .18s ease;
+  will-change: transform;
+}
+.card.tilt:hover {
+  transform: translateY(-6px) rotateX(6deg) rotateY(-4deg) scale(1.02);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.4) inset,
+    0 34px 50px -20px rgba(0,0,0,.8),
+    0 8px 18px -6px rgba(0,0,0,.55);
+}
+
+/* subtle felt-paper grain + radial spotlight behind the character */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 80% at 50% 30%, rgba(255,255,255,.28), transparent 60%);
+  mix-blend-mode: soft-light;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ---- card chrome --------------------------------------------------------- */
+.card__top {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 6px;
+}
+.card__name {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.05;
+  letter-spacing: -.01em;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.card__nameemoji { font-size: 14px; line-height: 1; }
+.card__namewrap { max-width: 78%; display: flex; flex-direction: column; gap: 3px; }
+/* the time always sits directly under the nickname — name is flavor, time is truth */
+.card__nametime {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 13px;
+  line-height: 1;
+  letter-spacing: -.01em;
+  opacity: .82;
+  font-variant-numeric: tabular-nums;
+}
+.card.sm .card__name { font-size: 12px; }
+.card.sm .card__nameemoji { font-size: 11px; }
+.card.sm .card__nametime { font-size: 11px; }
+.card.sm .card__namewrap { max-width: 92%; gap: 2px; }
+.card__tierpip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: 3px 6px;
+  border-radius: 999px;
+  background: rgba(0,0,0,.18);
+  color: inherit;
+  white-space: nowrap;
+}
+.card.ink-light .card__tierpip { background: rgba(255,255,255,.16); }
+
+/* big character */
+.card__art {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: grid;
+  place-items: center;
+  margin: 2px 0;
+}
+.card__emoji {
+  font-size: 58px;
+  line-height: 1;
+  filter: drop-shadow(0 6px 10px rgba(0,0,0,.35));
+}
+.card.sm .card__emoji { font-size: 40px; }
+.card__watermark {
+  position: absolute;
+  font-size: 120px;
+  opacity: .10;
+  z-index: 0;
+  pointer-events: none;
+  transform: rotate(-8deg);
+}
+
+/* index corners like a playing card */
+.card__index {
+  position: absolute;
+  z-index: 2;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 11px;
+  line-height: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  opacity: .9;
+}
+.card__index .ix-emoji { font-size: 12px; }
+.card__index.tl { top: 10px; left: 10px; }
+.card__index.br { bottom: 10px; right: 10px; transform: rotate(180deg); }
+.card.sm .card__index { display: none; }
+
+/* bottom info */
+.card__bottom {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.card__time {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 17px;
+  letter-spacing: -.01em;
+}
+.card__meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.card__daychip {
+  background: rgba(0,0,0,.2);
+  padding: 2px 7px;
+  border-radius: 6px;
+  letter-spacing: .02em;
+}
+.card.ink-light .card__daychip { background: rgba(255,255,255,.18); }
+
+/* flag specialty badge */
+.card__flag {
+  position: absolute;
+  top: 8px; right: 8px;
+  z-index: 3;
+  font-size: 13px;
+  background: rgba(0,0,0,.25);
+  border-radius: 7px;
+  padding: 2px 4px;
+  line-height: 1;
+}
+.card.ink-light .card__flag { background: rgba(255,255,255,.2); }
+
+/* rank badge on posted cards */
+.card__rankbadge {
+  position: absolute;
+  bottom: 8px; left: 8px;
+  z-index: 3;
+  font-size: 11px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: rgba(0,0,0,.22);
+  border-radius: 999px;
+  padding: 2px 7px 2px 5px;
+}
+.card.ink-light .card__rankbadge { background: rgba(255,255,255,.18); }
+
+/* ---- FOIL / glow for advanced tiers -------------------------------------- */
+.card.foil::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: linear-gradient(125deg,
+    #fff7, #b58cff, #7af7ff, #fff7, #ffd36e, #b58cff, #fff7);
+  background-size: 280% 280%;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+  animation: foilshift 6s linear infinite;
+}
+.card.foil { box-shadow: 0 0 0 1px rgba(168,85,247,.3), 0 18px 36px -16px rgba(124,58,237,.6), 0 4px 10px -4px rgba(0,0,0,.5); }
+@keyframes foilshift { to { background-position: 280% 0; } }
+
+/* nesting = extra gold ring */
+.card.ring { outline: 2px solid #f5c518; outline-offset: -5px; }
+.card.ring::before { background:
+  radial-gradient(120% 80% at 50% 30%, rgba(255,255,255,.3), transparent 60%),
+  radial-gradient(140% 100% at 50% 120%, rgba(245,197,24,.35), transparent 55%); }
+
+/* ---- DISABLED / already-owned: fully inert ------------------------------ */
+.card.is-disabled {
+  filter: grayscale(.85) brightness(.7);
+  opacity: .55;
+  cursor: not-allowed;
+  pointer-events: auto;        /* keep the element so the title tooltip works */
+  transform: none !important;  /* never lifts, even if .tilt slipped through */
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.12) inset,
+    0 8px 18px -12px rgba(0,0,0,.6);
+}
+.card.is-disabled * { pointer-events: none; }   /* children never intercept */
+.card.is-disabled:hover { transform: none !important; box-shadow:
+  0 1px 0 rgba(255,255,255,.12) inset, 0 8px 18px -12px rgba(0,0,0,.6); }
+.card.is-disabled.foil::after { animation: none; opacity: .4; }
+.card.is-disabled .card__art,
+.card.is-disabled .card__index { opacity: .9; }
+/* "owned" ribbon */
+.card__owned {
+  position: absolute;
+  z-index: 6;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%) rotate(-8deg);
+  background: rgba(15,20,28,.82);
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: .02em;
+  text-align: center;
+  line-height: 1.2;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,.18);
+  max-width: 84%;
+  pointer-events: none;
+  box-shadow: 0 6px 14px -6px rgba(0,0,0,.6);
+}
+.card.sm .card__owned { font-size: 9px; padding: 4px 7px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .card.foil::after { animation: none; }
+}
+
+/* =================== PER-SHIFT THEMES ===================================== */
+.t-earlybird { --c1:#ffe16b; --c2:#f6b73c; --ink:#4a3500; }
+.t-dawn      { --c1:#7e93da; --c2:#ff9166; --ink:#241a40; }
+.t-brunch    { --c1:#f7a81b; --c2:#d9630e; --ink:#3a1d00; }
+.t-morning   { --c1:#ffc46b; --c2:#ff9a3c; --ink:#4a2a00; }
+.t-grind     { --c1:#ff9a4d; --c2:#f4622b; --ink:#4a1a00; }
+.t-golden    { --c1:#ff7a3c; --c2:#e8402b; --ink:#fff4ec; }  /* light ink */
+.t-golden.ink-light, .t-golden { }
+.t-dusk      { --c1:#ff7a59; --c2:#7c3fd0; --ink:#fff0ff; }  /* light ink */
+.t-owl       { --c1:#3a2d72; --c2:#1c1640; --ink:#eef0ff; }  /* light ink */
+.t-joker     { --c1:#6d28d9; --c2:#db2777; --ink:#fff; }      /* light ink */
+.t-crown     { --c1:#ffe9a8; --c2:#f5c518; --ink:#4a3500; }
+.t-blade     { --c1:#e4e9f0; --c2:#a9b4c4; --ink:#23292f; }
+.t-leave     { --c1:#ecfdf5; --c2:#6ee7b7; --ink:#064e3b; }
+
+/* leave sun glow */
+.t-leave .card__art::after {
+  content: "";
+  position: absolute;
+  top: 5%; right: 8%;
+  width: 42%; aspect-ratio: 1;
+  background: radial-gradient(circle, rgba(253,224,71,.65) 0%, rgba(253,224,71,.25) 45%, transparent 70%);
+  z-index: 0; pointer-events: none;
+  border-radius: 50%;
+}
+
+/* themes that need light ink */
+.t-golden, .t-dusk, .t-owl, .t-joker { }
+
+/* owl star field */
+.t-owl .card__art::after {
+  content: "";
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(1.5px 1.5px at 20% 30%, #fff, transparent),
+    radial-gradient(1px 1px at 70% 20%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 80% 60%, #fff, transparent),
+    radial-gradient(1px 1px at 35% 70%, #fff, transparent),
+    radial-gradient(1px 1px at 55% 45%, #ffe9a8, transparent),
+    radial-gradient(1.5px 1.5px at 15% 80%, #fff, transparent);
+  opacity: .8;
+  z-index: 0;
+}
+
+/* joker wild multicolor wash */
+.t-joker::before {
+  background:
+    conic-gradient(from 200deg at 50% 40%,
+      #f97316, #db2777, #6d28d9, #2563eb, #059669, #eab308, #f97316);
+  opacity: .35;
+  mix-blend-mode: screen;
+}
+
+/* crown shimmer */
+.t-crown .card__art::after {
+  content: "";
+  position: absolute; inset: -40% -10%;
+  background: linear-gradient(115deg, transparent 40%, rgba(255,255,255,.6) 50%, transparent 60%);
+  animation: shimmer 4.5s ease-in-out infinite;
+  z-index: 1; pointer-events: none;
+}
+@keyframes shimmer { 0%,100%{transform:translateX(-60%);} 50%{transform:translateX(60%);} }
+@media (prefers-reduced-motion: reduce) { .t-crown .card__art::after { animation: none; } }
+
+/* blade silver sheen */
+.t-blade::before { background:
+  linear-gradient(135deg, rgba(255,255,255,.6) 0%, transparent 35%, rgba(255,255,255,.35) 70%, transparent 100%); }

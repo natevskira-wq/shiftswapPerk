@@ -1,0 +1,66 @@
+/* ===========================================================================
+   ShiftSwap — i18n (EN / AR). Enough coverage to demo RTL + translation.
+   window.SS_I18N.t(lang, key)
+   =========================================================================== */
+(function () {
+  const STR = {
+    EN: {
+      eyebrow: "The Deck",
+      hand: "Hand", market: "Market", post: "Post", ledger: "Ledger", profile: "Me",
+      myHand: "My Hand", theMarket: "The Market", theLedger: "The Ledger",
+      thisWeek: "This week", tradeThis: "Trade this", openHand: "Open Hand",
+      flexible: "Flexible mode", flexibleSub: "I’ll take anything reasonable",
+      flexibleOn: "Open Hand — others can pitch you any fair swap",
+      restDays: "Rest days", shifts: "shifts",
+      openOffers: "Open offers", matchesForYou: "Matches for you", otherOffers: "On the table",
+      filters: "Filters", allDays: "All days", allShifts: "All shifts", allTiers: "All tiers", allLangs: "All",
+      match: "MATCH", wants: "Wants", offering: "Offering", proposeTrade: "Propose trade",
+      youGive: "You give", youGet: "You get", viewDetails: "Details",
+      postTrade: "Post a Trade", step: "Step", pickCard: "Pick a card to offer",
+      pickCardSub: "Which shift do you want off your plate?", whatWant: "What do you want back?",
+      whatWantSub: "Pick a shift type and day — or stay flexible.", review: "Review & post",
+      anyDay: "Any day", anyShift: "Anything reasonable", postToMarket: "Post to The Market",
+      posted: "Posted to The Market", live: "Live",
+      proposeTitle: "Propose this trade", confirm: "Confirm trade", awaiting: "Awaiting their confirm",
+      bothConfirm: "Both sides confirmed", dealSealed: "Deal sealed!", rtmMsg: "RTM message",
+      copyMsg: "Copy message", copied: "Copied!", sendSlack: "Send to RTM (Slack)", done: "Done",
+      myRank: "My rank", toNext: "to next rank", trades: "trades", tradeHistory: "Trade history",
+      gave: "Gave", got: "Got", managerView: "Manager view", agentView: "My ledger",
+      heatmap: "Shift demand heatmap", wanted: "Wanted", avoided: "Avoided",
+      crownIndex: "The Crown Index", crownSub: "Rest-day demand score", leaderboard: "Top traders",
+      weeklyVol: "Weekly trade volume", tierActivity: "Activity by skill tier",
+      dealing: "Dealing your hand…", welcome: "Welcome back", tapToEnter: "Tap to enter the floor",
+      with: "with", you: "You", xp: "XP", flexBonus: "1.5× XP — Open Hand bonus",
+    },
+    AR: {
+      eyebrow: "الطاولة",
+      hand: "يدي", market: "السوق", post: "اعرض", ledger: "السجل", profile: "أنا",
+      myHand: "يدي", theMarket: "السوق", theLedger: "السجل",
+      thisWeek: "هذا الأسبوع", tradeThis: "بدّل هذه", openHand: "يد مفتوحة",
+      flexible: "الوضع المرن", flexibleSub: "أقبل أي عرض معقول",
+      flexibleOn: "يد مفتوحة — يمكن للآخرين عرض أي تبديل عادل",
+      restDays: "أيام الراحة", shifts: "ورديات",
+      openOffers: "العروض المفتوحة", matchesForYou: "تطابقات لك", otherOffers: "على الطاولة",
+      filters: "تصفية", allDays: "كل الأيام", allShifts: "كل الورديات", allTiers: "كل الفئات", allLangs: "الكل",
+      match: "تطابق", wants: "يريد", offering: "يعرض", proposeTrade: "اقترح تبديلاً",
+      youGive: "تعطي", youGet: "تأخذ", viewDetails: "التفاصيل",
+      postTrade: "اعرض تبديلاً", step: "خطوة", pickCard: "اختر بطاقة لعرضها",
+      pickCardSub: "أي وردية تريد التخلّص منها؟", whatWant: "ماذا تريد بالمقابل؟",
+      whatWantSub: "اختر نوع وردية ويوماً — أو ابقَ مرناً.", review: "مراجعة ونشر",
+      anyDay: "أي يوم", anyShift: "أي شيء معقول", postToMarket: "انشر في السوق",
+      posted: "نُشر في السوق", live: "مباشر",
+      proposeTitle: "اقترح هذا التبديل", confirm: "أكّد التبديل", awaiting: "بانتظار تأكيدهم",
+      bothConfirm: "تأكيد الطرفين", dealSealed: "تمّت الصفقة!", rtmMsg: "رسالة RTM",
+      copyMsg: "نسخ الرسالة", copied: "تم النسخ!", sendSlack: "أرسل إلى RTM", done: "تمّ",
+      myRank: "رتبتي", toNext: "للرتبة التالية", trades: "تبديلات", tradeHistory: "سجل التبديلات",
+      gave: "أعطى", got: "أخذ", managerView: "عرض المدير", agentView: "سجلّي",
+      heatmap: "خريطة الطلب على الورديات", wanted: "مطلوبة", avoided: "متجنّبة",
+      crownIndex: "مؤشر التاج", crownSub: "درجة الطلب على أيام الراحة", leaderboard: "أفضل المتداولين",
+      weeklyVol: "حجم التبديل الأسبوعي", tierActivity: "النشاط حسب الفئة",
+      dealing: "نوزّع بطاقاتك…", welcome: "أهلاً بعودتك", tapToEnter: "اضغط للدخول",
+      with: "مع", you: "أنت", xp: "نقاط", flexBonus: "نقاط ×١٫٥ — مكافأة اليد المفتوحة",
+    },
+  };
+  function t(lang, key) { return (STR[lang] && STR[lang][key]) || (STR.EN[key] || key); }
+  window.SS_I18N = { STR, t };
+})();
