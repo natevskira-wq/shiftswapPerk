@@ -220,30 +220,38 @@
         </div>
 
         {/* filters */}
-        <div className="chiprow chiprow--wrap" style={{ marginTop: 2 }}>
-          <button className={"pill" + (matchOnly ? " active" : "")} onClick={() => setMatchOnly(m => !m)}>
+        <div className="filter-bar">
+          <button
+            className={"filter-match-btn" + (matchOnly ? " active" : "")}
+            onClick={() => setMatchOnly(m => !m)}>
             ★ {t("matchesForYou")}
           </button>
-          {days.map(d => (
-            <button key={d} className={"pill" + (dayF === d ? " active" : "")} onClick={() => setDayF(d)}>
-              {d === "ALL" ? t("allDays") : d}
-            </button>
-          ))}
-        </div>
-        <div className="chiprow chiprow--wrap">
-          {shiftKeys.map(s => (
-            <button key={s} className={"pill" + (shiftF === s ? " active" : "")} onClick={() => setShiftF(s)}>
-              {s === "ALL" ? t("allShifts") : (
-                <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
-                  <span>{SS.shift(s).emoji}</span>
-                  <span style={{ display: "inline-flex", flexDirection: "column", gap: 1, lineHeight: 1.15, textAlign: "start" }}>
-                    <span>{SS.shift(s).name}</span>
-                    <span style={{ fontSize: ".72em", opacity: .55, fontWeight: 600 }}>{SS.timeText(s)}</span>
-                  </span>
-                </span>
-              )}
-            </button>
-          ))}
+          <div className="filter-selects">
+            <div className="filter-select-wrap">
+              <select
+                className="filter-select"
+                value={dayF}
+                onChange={e => setDayF(e.target.value)}>
+                <option value="ALL">{t("allDays")}</option>
+                {SS.DAYS.map(d => (
+                  <option key={d.key} value={d.key}>{d.key} · {d.date}</option>
+                ))}
+              </select>
+              <span className="filter-select-arrow">▾</span>
+            </div>
+            <div className="filter-select-wrap">
+              <select
+                className="filter-select"
+                value={shiftF}
+                onChange={e => setShiftF(e.target.value)}>
+                <option value="ALL">{t("allShifts")}</option>
+                {shiftKeys.filter(s => s !== "ALL").map(s => (
+                  <option key={s} value={s}>{SS.shift(s).emoji} {SS.shift(s).name} · {SS.timeText(s)}</option>
+                ))}
+              </select>
+              <span className="filter-select-arrow">▾</span>
+            </div>
+          </div>
         </div>
 
         {matches.length > 0 && (

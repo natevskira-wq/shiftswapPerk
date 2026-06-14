@@ -183,6 +183,41 @@ body::before {
 .chiprow { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 8px; scrollbar-width: none; }
 .chiprow::-webkit-scrollbar { display: none; }
 
+/* Market filter bar */
+.filter-bar {
+  display: flex; flex-direction: column; gap: 8px;
+  margin: 6px 0 12px;
+}
+.filter-match-btn {
+  background: var(--surface-2); border: 1.5px solid var(--line);
+  color: var(--ink-dim); border-radius: 10px;
+  padding: 9px 14px; font-size: 12px; font-weight: 700;
+  text-align: center; transition: all .15s;
+}
+.filter-match-btn.active {
+  background: rgba(245,197,24,.15); border-color: var(--gold);
+  color: var(--gold);
+}
+.filter-match-btn:hover:not(.active) { border-color: var(--line-2); color: var(--ink); }
+.filter-selects { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.filter-select-wrap {
+  position: relative; display: flex; align-items: center;
+}
+.filter-select {
+  width: 100%; appearance: none; -webkit-appearance: none;
+  background: var(--surface-2); border: 1.5px solid var(--line);
+  color: var(--ink); border-radius: 10px;
+  padding: 9px 32px 9px 12px; font-size: 12px; font-weight: 700;
+  font-family: var(--ui); cursor: pointer; transition: border-color .15s;
+}
+.filter-select:focus { outline: none; border-color: var(--gold); }
+.filter-select:hover { border-color: var(--line-2); }
+.filter-select option { background: #1c2e3b; color: var(--ink); }
+.filter-select-arrow {
+  position: absolute; right: 11px; pointer-events: none;
+  color: var(--ink-faint); font-size: 11px;
+}
+
 .avatar {
   width: 34px; height: 34px; border-radius: 11px; flex: 0 0 auto;
   display: grid; place-items: center; font-weight: 800; font-size: 13px;
