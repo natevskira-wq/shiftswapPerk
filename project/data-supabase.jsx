@@ -51,7 +51,7 @@
 
   // ---- boot: hydrate SS.* from the database before first render -----------
   async function fetchOpenOffers() {
-    const { data, error } = await client.from("trade_offers").select("*").eq("status", "open");
+    const { data, error } = await client.from("swap_offers").select("*").eq("status", "open");
     if (error) throw error;
     return (data || []).map(rowToOffer);
   }
@@ -94,9 +94,9 @@
     if (!enabled) return false;
     try {
       const [ag, sch, off] = await Promise.all([
-        client.from("agents").select("*"),
-        client.from("schedules").select("*"),
-        client.from("trade_offers").select("*").eq("status", "open"),
+        client.from("swap_agents").select("*"),
+        client.from("swap_schedules").select("*"),
+        client.from("swap_offers").select("*").eq("status", "open"),
       ]);
       if (!ag.error) applyAgents(ag.data);
       if (!sch.error) applySchedules(sch.data);
@@ -117,7 +117,7 @@
     const refresh = async () => { try { cb(await fetchOpenOffers()); } catch (e) {} };
     const ch = client
       .channel("ss-offers")
-      .on("postgres_changes", { event: "*", schema: "public", table: "trade_offers" }, refresh)
+      .on("postgres_changes", { event: "*", schema: "public", table: "swap_offers" }, refresh)
       .subscribe();
     return () => { try { client.removeChannel(ch); } catch (e) {} };
   }
@@ -125,26 +125,26 @@
   // ---- writes (fire-and-forget; realtime reconciles local optimistic state)
   function insertOffer(o) {
     if (!enabled) return;
-    client.from("trade_offers").insert(offerToRow(o)).then(({ error }) => {
+    client.from("swap_offers").insert(offerToRow(o)).then(({ error }) => {
       if (error) console.warn("[SSDB] insertOffer:", error.message);
     });
   }
   function removeOffer(id) {
     if (!enabled) return;
-    client.from("trade_offers").update({ status: "matched" }).eq("id", id).then(({ error }) => {
+    client.from("swap_offers").update({ status: "matched" }).eq("id", id).then(({ error }) => {
       if (error) console.warn("[SSDB] removeOffer:", error.message);
     });
   }
   function reopenOffer(o) {
     if (!enabled) return;
     // restore to the board: upsert keeps it idempotent if the row still exists
-    client.from("trade_offers").upsert({ ...offerToRow(o), status: "open" }).then(({ error }) => {
+    client.from("swap_offers").upsert({ ...offerToRow(o), status: "open" }).then(({ error }) => {
       if (error) console.warn("[SSDB] reopenOffer:", error.message);
     });
   }
   function insertMatch(entry) {
     if (!enabled) return;
-    client.from("trade_matches").insert({
+    client.from("swap_matches").insert({
       id: entry.id,
       offer_id: entry.offer && entry.offer.id,
       offer: entry.offer || null,
@@ -158,7 +158,7 @@
   }
   function resolveMatch(id, status) {
     if (!enabled) return;
-    client.from("trade_matches").update({ status }).eq("id", id).then(({ error }) => {
+    client.from("swap_matches").update({ status }).eq("id", id).then(({ error }) => {
       if (error) console.warn("[SSDB] resolveMatch:", error.message);
     });
   }
@@ -174,7 +174,7 @@
       })));
     push(1, schedule.w1); push(2, schedule.w2);
     if (!rows.length) return;
-    client.from("schedules").upsert(rows).then(({ error }) => {
+    client.from("swap_schedules").upsert(rows).then(({ error }) => {
       if (error) console.warn("[SSDB] upsertSchedules:", error.message);
     });
   }
